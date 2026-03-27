@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard de Inventario Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div id="login-section">
+            <div class="d-flex min-vh-100 justify-content-center align-items-center">
+                <div class="card p-5 text-center shadow-lg w-100" style="max-width: 450px; border-top: 5px solid var(--primary);">
+                    <div class="mb-4">
+                        <span style="font-size: 3.5rem;">🔐</span>
+                        <h3 class="mt-3 fw-bold text-dark">Gestión Pro</h3>
+                        <p class="text-muted">Acceso seguro al panel de control</p>
+                    </div>
+                    <div class="mb-3 text-start">
+                        <label class="form-label fw-semibold text-secondary small">USUARIO</label>
+                        <input type="text" id="user" class="form-control form-control-lg bg-light" placeholder="Ingresa tu usuario">
+                    </div>
+                    <div class="mb-4 text-start">
+                        <label class="form-label fw-semibold text-secondary small">CONTRASEÑA</label>
+                        <input type="password" id="pass" class="form-control form-control-lg bg-light" placeholder="••••••••" onkeydown="if(event.key === 'Enter'){ login(); }">
+                    </div>
+                    <button class="btn btn-primary btn-lg w-100 mt-2 shadow-sm" onclick="login()">Iniciar Sesión</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="main-section" class="d-none pt-4">
+            <div class="d-flex justify-content-end mb-3 no-print">
+                <button class="btn btn-outline-danger" onclick="logout()">🚪 Cerrar Sesión</button>
+            </div>
+            <div class="row mb-4 no-print">
+                <div class="col-md-6">
+                    <div class="card stat-card p-4 text-center">
+                        <h6>VALOR TOTAL EN BODEGA</h6>
+                        <h2 id="valor-total">$0.00</h2>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4 text-center border-start border-primary border-5">
+                        <h6>PRODUCTOS REGISTRADOS</h6>
+                        <h2 id="total-items">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-4 mb-4 no-print">
+                <h5 class="text-secondary mb-3">📦 Agregar Mercancía</h5>
+                <div class="row g-2">
+                    <div class="col-md-3"><input type="text" id="sku" class="form-control" placeholder="SKU"></div>
+                    <div class="col-md-4"><input type="text" id="nombre" class="form-control" placeholder="Nombre">
+                    </div>
+                    <div class="col-md-2"><input type="number" id="precio" class="form-control" placeholder="Precio $">
+                    </div>
+                    <div class="col-md-2"><input type="number" id="stock" class="form-control" placeholder="Cant.">
+                    </div>
+                    <div class="col-md-1"><button class="btn btn-primary w-100" onclick="crear()">+</button></div>
+                </div>
+            </div>
+
+            <div class="card p-4 mb-4 border-start border-warning border-5">
+                <h5 class="text-secondary mb-3 no-print">📝 Generador de Presupuesto</h5>
+                <div class="position-relative mb-3 no-print">
+                    <input type="text" id="buscar-presupuesto" class="form-control form-control-lg"
+                        placeholder="🔍 Buscar artículo para el presupuesto..." onkeyup="filtrarProductos()">
+                    <div id="resultados-busqueda" class="list-group position-absolute w-100"></div>
+                </div>
+
+                <table class="table align-middle mt-2">
+                    <thead class="table-warning">
+                        <tr>
+                            <th>ARTÍCULO</th>
+                            <th>CANT.</th>
+                            <th>PRECIO UNIT.</th>
+                            <th>SUBTOTAL</th>
+                            <th class="no-print"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-presupuesto">
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>TOTAL A PAGAR:</strong></td>
+                            <td>
+                                <h4 id="total-presupuesto" class="text-success m-0">$0.00</h4>
+                            </td>
+                            <td class="no-print"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <button class="btn btn-warning w-100 mt-3 no-print" onclick="window.print()">🖨️ Generar PDF /
+                    Imprimir</button>
+            </div>
+
+            <div class="card p-4 no-print">
+                <h5 class="text-secondary mb-3">📋 Inventario Completo</h5>
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>SKU</th>
+                            <th>PRODUCTO</th>
+                            <th>PRECIO UNIT.</th>
+                            <th>STOCK</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let TOKEN = "";
+        const API = "http://127.0.0.1:8000";
+        let productosBase = [];
+        let carritoPresupuesto = [];
+
+        async function login() {
+            const formData = new FormData();
+            formData.append('username', document.getElementById('user').value);
+            formData.append('password', document.getElementById('pass').value);
+
+            const res = await fetch(`${API}/login`, { method: 'POST', body: formData });
+            if (res.ok) {
+                const data = await res.json();
+                TOKEN = data.access_token;
+                document.getElementById('login-section').classList.add('d-none');
+                document.getElementById('main-section').classList.remove('d-none');
+                cargar();
+            } else { alert("Acceso denegado"); }
+        }
+
+        function logout() {
+            TOKEN = "";
+            document.getElementById('pass').value = ""; // Limpiar la contraseña por seguridad
+            document.getElementById('login-section').classList.remove('d-none');
+            document.getElementById('main-section').classList.add('d-none');
+        }
+
+        async function cargar() {
+            const res = await fetch(`${API}/productos/`);
+            productosBase = await res.json();
+
+            let html = "";
+            let totalDinero = 0;
+
+            productosBase.forEach(p => {
+                totalDinero += (p.precio * p.stock);
+                const stockClass = p.stock < 5 ? 'badge-low' : 'bg-success';
+
+                html += `
+                <tr>
+                    <td><code class="text-primary">${p.sku}</code></td>
+                    <td><strong>${p.nombre}</strong></td>
+                    <td>$${p.precio.toLocaleString()}</td>
+                    <td><span class="badge ${stockClass} p-2">${p.stock} unidades</span></td>
+                    <td><button class="btn btn-sm btn-outline-danger" onclick="eliminar('${p.sku}')">Borrar</button></td>
+                </tr>`;
+            });
+
+            document.getElementById('tabla').innerHTML = html;
+            document.getElementById('valor-total').innerText = `$${totalDinero.toLocaleString()}`;
+            document.getElementById('total-items').innerText = productosBase.length;
+        }
+
+        // --- LÓGICA DE PRESUPUESTO (SAINT STYLE) ---
+        function filtrarProductos() {
+            const busqueda = document.getElementById('buscar-presupuesto').value.toLowerCase();
+            const divResultados = document.getElementById('resultados-busqueda');
+
+            if (busqueda.length < 1) { divResultados.innerHTML = ""; return; }
+
+            const sugerencias = productosBase.filter(p =>
+                p.nombre.toLowerCase().includes(busqueda) || p.sku.toLowerCase().includes(busqueda)
+            );
+
+            divResultados.innerHTML = sugerencias.map(p => `
+                <button class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" 
+                        onclick="agregarAlPresupuesto('${p.sku}')">
+                    <span><strong>${p.sku}</strong> - ${p.nombre}</span>
+                    <span class="badge bg-primary">$${p.precio}</span>
+                </button>
+            `).join('');
+        }
+
+        function agregarAlPresupuesto(sku) {
+            const producto = productosBase.find(p => p.sku === sku);
+            const existe = carritoPresupuesto.find(item => item.sku === sku);
+
+            if (existe) {
+                existe.cantidad++;
+            } else {
+                carritoPresupuesto.push({ ...producto, cantidad: 1 });
+            }
+
+            document.getElementById('buscar-presupuesto').value = "";
+            document.getElementById('resultados-busqueda').innerHTML = "";
+            actualizarTablaPresupuesto();
+        }
+
+        function actualizarTablaPresupuesto() {
+            const tabla = document.getElementById('tabla-presupuesto');
+            let total = 0;
+
+            tabla.innerHTML = carritoPresupuesto.map((item, index) => {
+                const subtotal = item.precio * item.cantidad;
+                total += subtotal;
+                return `
+                    <tr>
+                        <td><strong>${item.nombre}</strong><br><small class="text-muted">${item.sku}</small></td>
+                        <td><input type="number" value="${item.cantidad}" class="form-control form-control-sm w-75 no-print" 
+                             onchange="cambiarCantidad(${index}, this.value)">
+                             <span class="d-none d-print-block">${item.cantidad}</span></td>
+                        <td>$${item.precio.toLocaleString()}</td>
+                        <td><strong>$${subtotal.toLocaleString()}</strong></td>
+                        <td class="no-print text-center"><button class="btn btn-sm text-danger" onclick="quitarDelPresupuesto(${index})">✕</button></td>
+                    </tr>`;
+            }).join('');
+
+            document.getElementById('total-presupuesto').innerText = `$${total.toLocaleString()}`;
+        }
+
+        function cambiarCantidad(index, valor) {
+            if (valor < 1) return;
+            carritoPresupuesto[index].cantidad = parseInt(valor);
+            actualizarTablaPresupuesto();
+        }
+
+        function quitarDelPresupuesto(index) {
+            carritoPresupuesto.splice(index, 1);
+            actualizarTablaPresupuesto();
+        }
+
+        // --- CRUD BÁSICO ---
+        async function crear() {
+            const sku = document.getElementById('sku').value;
+            const nombre = document.getElementById('nombre').value;
+            const precio = document.getElementById('precio').value;
+            const stock = document.getElementById('stock').value;
+            const url = `${API}/productos/?sku=${sku}&nombre=${nombre}&precio=${precio}&stock=${stock}`;
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${TOKEN}` }
+            });
+
+            if (res.ok) {
+                cargar();
+                document.getElementById('sku').value = "";
+                document.getElementById('nombre').value = "";
+                document.getElementById('precio').value = "";
+                document.getElementById('stock').value = "";
+            } else { alert("Error: Revisa si el SKU ya existe"); }
+        }
+
+        async function eliminar(sku) {
+            if (confirm(`¿Eliminar SKU ${sku}?`)) {
+                await fetch(`${API}/productos/${sku}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${TOKEN}` }
+                });
+                cargar();
+            }
+        }
+    </script>
+</body>
+
+</html>

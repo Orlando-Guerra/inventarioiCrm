@@ -1,0 +1,108 @@
+/* Variables de color estilo Moderno */
+:root {
+    --primary: #4361ee;
+    --secondary: #3f37c9;
+    --success: #4cc9f0;
+    --danger: #f72585;
+    --warning: #fee440;
+    --bg-body: #f8f9fc;
+    --glass: rgba(255, 255, 255, 0.9);
+}
+
+body {
+    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    min-height: 100vh;
+    color: #2b2d42;
+}
+
+/* Tarjetas con efecto cristal */
+.card {
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px !important;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+    margin-bottom: 2rem;
+}
+
+/* Encabezados y Títulos */
+h2,
+h4,
+h5 {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+    border: none;
+    color: white !important;
+}
+
+/* Inputs y botones modernos */
+.form-control {
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.15);
+    border-color: var(--primary);
+}
+
+.btn-primary {
+    background: var(--primary);
+    border: none;
+    border-radius: 10px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+}
+
+/* Estilo para la tabla de presupuesto (estilo factura) */
+.table {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.table thead {
+    background-color: #2b2d42;
+    color: white;
+}
+
+/* Badge de stock bajo animado */
+.badge-low {
+    background: var(--danger);
+    color: white;
+    box-shadow: 0 0 10px rgba(247, 37, 133, 0.4);
+}
+
+/* Animación de entrada */
+#main-section {
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ajustes de impresión */
+@media print {
+    body {
+        background: white !important;
+    }
+
+    .card {
+        border: 1px solid #eee !important;
+        box-shadow: none !important;
+    }
+}
