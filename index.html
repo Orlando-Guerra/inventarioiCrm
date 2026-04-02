@@ -1,275 +1,1151 @@
 <!DOCTYPE html>
-<html lang="es">
-
+<html lang="es" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard de Inventario Pro</title>
+    <title>CRM Ventas Pro ERP</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 </head>
-
 <body>
-    <div class="container">
-        <div id="login-section">
-            <div class="d-flex min-vh-100 justify-content-center align-items-center">
-                <div class="card p-5 text-center shadow-lg w-100" style="max-width: 450px; border-top: 5px solid var(--primary);">
-                    <div class="mb-4">
-                        <span style="font-size: 3.5rem;">🔐</span>
-                        <h3 class="mt-3 fw-bold text-dark">Gestión Pro</h3>
-                        <p class="text-muted">Acceso seguro al panel de control</p>
+    <div class="logo-login no-print"><div class="logo-login-icon"></div>habi<span>CM.</span></div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark d-none no-print mb-4" id="navbar">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="#">Gestión Corporativa ERP</a>
+            <div class="d-flex align-items-center">
+                <span class="navbar-text me-3 text-white" id="nav-user-info"></span>
+                <span class="badge bg-primary me-3" id="nav-role-badge"></span>
+                <button class="btn btn-sm btn-outline-light" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4">
+        <!-- Login Section con 3 Portales -->
+        <div id="login-section" class="d-flex min-vh-100 justify-content-center align-items-center">
+            <div class="card p-5 text-center shadow-lg w-100" style="max-width: 500px; margin-top: -50px;">
+                <div class="mb-4">
+                    <span style="font-size: 3.5rem;">🏢</span>
+                    <h3 class="mt-3 fw-bold text-white">Portal de Acceso</h3>
+                    <p class="text-secondary small">Selecciona tu módulo e inicia sesión</p>
+                </div>
+
+                <div class="d-flex justify-content-between mb-4 gap-2">
+                    <input type="radio" class="btn-check" name="portal-type" id="portal-admin" value="admin" autocomplete="off" checked>
+                    <label class="btn btn-outline-primary w-100 d-flex flex-column py-2" for="portal-admin" style="font-size: 0.75rem;">
+                        <span class="fs-5 mb-1">👑</span>Admin
+                    </label>
+
+                    <input type="radio" class="btn-check" name="portal-type" id="portal-seller" value="vendedor" autocomplete="off">
+                    <label class="btn btn-outline-success w-100 d-flex flex-column py-2" for="portal-seller" style="font-size: 0.75rem;">
+                        <span class="fs-5 mb-1">🛒</span>Pedidos
+                    </label>
+
+                    <input type="radio" class="btn-check" name="portal-type" id="portal-cashier" value="cajero" autocomplete="off">
+                    <label class="btn btn-outline-warning text-white w-100 d-flex flex-column py-2" for="portal-cashier" style="font-size: 0.75rem;">
+                        <span class="fs-5 mb-1">💳</span>Caja
+                    </label>
+                </div>
+
+                <div class="mb-3 text-start">
+                    <label class="form-label text-secondary small fw-bold">USUARIO</label>
+                    <input type="text" id="user" class="form-control form-control-lg" placeholder="Tu usuario">
+                </div>
+                <div class="mb-4 text-start">
+                    <label class="form-label text-secondary small fw-bold">CONTRASEÑA</label>
+                    <input type="password" id="pass" class="form-control form-control-lg" placeholder="••••••••" onkeydown="if(event.key === 'Enter'){ login(); }">
+                </div>
+                <button class="btn btn-primary btn-lg w-100 mt-2 fw-bold" onclick="login()">Acceder al Sistema</button>
+            </div>
+        </div>
+
+        <!-- Admin View -->
+        <div id="admin-section" class="d-none no-print">
+            
+            <!-- SAINT GRID MENU -->
+            <div id="admin-menu" class="admin-tab mb-5">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card stat-card p-4 h-100 text-center shadow-sm">
+                            <h6 class="text-secondary fw-bold text-uppercase">Valor en Almacén</h6>
+                            <h1 id="valor-total" class="fw-bold text-primary m-0">$0.00</h1>
+                        </div>
                     </div>
-                    <div class="mb-3 text-start">
-                        <label class="form-label fw-semibold text-secondary small">USUARIO</label>
-                        <input type="text" id="user" class="form-control form-control-lg bg-light" placeholder="Ingresa tu usuario">
+                    <div class="col-md-6">
+                        <div class="card stat-card p-4 h-100 text-center shadow-sm" style="border-left-color: var(--success);">
+                            <h6 class="text-secondary fw-bold text-uppercase">Productos Creados</h6>
+                            <h1 id="total-items" class="fw-bold text-success m-0">0</h1>
+                        </div>
                     </div>
-                    <div class="mb-4 text-start">
-                        <label class="form-label fw-semibold text-secondary small">CONTRASEÑA</label>
-                        <input type="password" id="pass" class="form-control form-control-lg bg-light" placeholder="••••••••" onkeydown="if(event.key === 'Enter'){ login(); }">
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-3 col-6">
+                        <div class="saint-tile bg-warning text-dark p-4 rounded shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-inventario')">
+                            <div>
+                                <h4 class="fw-bold mb-1">Inventario</h4>
+                                <p class="small mb-0 opacity-75 fw-semibold">Control, Carga y Ajuste.</p>
+                            </div>
+                            <div class="mt-4 text-end fs-2 opacity-50">📦</div>
+                        </div>
                     </div>
-                    <button class="btn btn-primary btn-lg w-100 mt-2 shadow-sm" onclick="login()">Iniciar Sesión</button>
+                    <div class="col-md-3 col-6">
+                        <div class="saint-tile bg-primary text-white p-4 rounded shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-productos')">
+                            <div>
+                                <h4 class="fw-bold mb-1">Productos</h4>
+                                <p class="small mb-0 opacity-75 fw-semibold">Creación de Catálogo.</p>
+                            </div>
+                            <div class="mt-4 text-end fs-2 opacity-50">🏷️</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="saint-tile bg-success text-white p-4 rounded shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-usuarios')">
+                            <div>
+                                <h4 class="fw-bold mb-1">Personal</h4>
+                                <p class="small mb-0 opacity-75 fw-semibold">Vendedores y Cajeros.</p>
+                            </div>
+                            <div class="mt-4 text-end fs-2 opacity-50">👥</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="saint-tile bg-info text-dark p-4 rounded shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-reportes')">
+                            <div>
+                                <h4 class="fw-bold mb-1">Reportes</h4>
+                                <p class="small mb-0 opacity-75 fw-semibold">Consultas y Kárdex.</p>
+                            </div>
+                            <div class="mt-4 text-end fs-2 opacity-50">📊</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="saint-tile bg-danger text-white p-4 rounded shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-historial')">
+                            <div>
+                                <h4 class="fw-bold mb-1">Servicios / Facturas</h4>
+                                <p class="small mb-0 opacity-75 fw-semibold">Historial de Ventas.</p>
+                            </div>
+                            <div class="mt-4 text-end fs-2 opacity-50">📄</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Inventario (Control Stock) -->
+            <div id="tab-inventario" class="admin-tab d-none">
+                <button class="btn btn-outline-secondary mb-3 btn-sm fw-bold" onclick="mostrarTabAdmin('admin-menu')">⬅ Volver al Menú Principal</button>
+                <div class="card p-4 shadow-sm border-top border-warning border-4">
+                    <h5 class="fw-bold mb-4">🎛️ Control de Inventario y Existencias</h5>
+                    <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="table-light"><tr><th>CÓDIGO</th><th>DESCRIPCIÓN</th><th>Costo</th><th>P.V.P</th><th>STOCK ACTUAL</th><th>AJUSTES INVENTARIO</th></tr></thead>
+                        <tbody id="tabla-inventario"></tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Productos (Creación) -->
+            <div id="tab-productos" class="admin-tab d-none">
+                <button class="btn btn-outline-secondary mb-3 btn-sm fw-bold" onclick="mostrarTabAdmin('admin-menu')">⬅ Volver al Menú Principal</button>
+                <div class="card p-4 shadow-sm border-top border-primary border-4">
+                    <h5 class="fw-bold mb-4">✨ Creación de Nuevos Productos</h5>
+                    <div class="row g-3">
+                        <div class="col-md-2">
+                            <label class="form-label small text-secondary">Código (SKU)</label>
+                            <input type="text" id="sku" class="form-control fw-bold text-primary" placeholder="Ej. A-001">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small text-secondary">Descripción</label>
+                            <input type="text" id="nombre" class="form-control" placeholder="Nombre completo">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small text-secondary">Costo $</label>
+                            <input type="number" id="costo" class="form-control text-danger fw-bold" placeholder="0.00">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small text-secondary">Precio Venta $</label>
+                            <input type="number" id="precio" class="form-control text-success fw-bold" placeholder="0.00">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small text-secondary">Stock Inicial</label>
+                            <input type="number" id="stock" class="form-control" placeholder="Cant.">
+                        </div>
+                        <div class="col-12 text-end mt-4">
+                            <button class="btn btn-primary btn-lg px-5 fw-bold" onclick="crearProducto()">Guardar Producto</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Usuarios -->
+            <div id="tab-usuarios" class="admin-tab d-none">
+                <button class="btn btn-outline-secondary mb-3 btn-sm fw-bold" onclick="mostrarTabAdmin('admin-menu')">⬅ Volver al Menú Principal</button>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card p-4 shadow-sm border-top border-success border-4">
+                            <h5 class="fw-bold mb-4">👤 Registrar Personal</h5>
+                            <div class="mb-3">
+                                <label class="form-label small text-secondary">Rol del empleado</label>
+                                <select id="new-role" class="form-select bg-dark">
+                                    <option value="vendedor">VENDEDOR (Crea pedidos)</option>
+                                    <option value="cajero">CAJERO (Facturador)</option>
+                                    <option value="admin">ADMINISTRADOR</option>
+                                </select>
+                            </div>
+                            <div class="mb-3"><input type="text" id="new-user" class="form-control" placeholder="Usuario de acceso"></div>
+                            <div class="mb-4"><input type="password" id="new-pass" class="form-control" placeholder="Clave secreta"></div>
+                            <button class="btn btn-success w-100 fw-bold" onclick="crearUsuario()">Guardar Empleado</button>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card p-4 shadow-sm">
+                            <h5 class="fw-bold mb-4">👥 Nómina de Empleados del Sistema</h5>
+                            <table class="table">
+                                <thead class="table-light"><tr><th>Usuario</th><th>Rol Asignado</th></tr></thead>
+                                <tbody id="tabla-usuarios"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Historial -->
+            <div id="tab-historial" class="admin-tab d-none">
+                <button class="btn btn-outline-secondary mb-3 btn-sm fw-bold" onclick="mostrarTabAdmin('admin-menu')">⬅ Volver al Menú Principal</button>
+                <div class="card p-4 shadow-sm border-top border-danger border-4">
+                    <h5 class="fw-bold mb-4">📄 Registro de Servicios y Facturas</h5>
+                    <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="table-light"><tr><th>N° Pedido</th><th>Fecha</th><th>Cliente</th><th>Atendido Por</th><th>Monto Total</th><th></th></tr></thead>
+                        <tbody id="tabla-pedidos-admin"></tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Reportes -->
+            <div id="tab-reportes" class="admin-tab d-none border-top border-info border-4 rounded p-4 shadow-sm bg-white text-dark">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold text-dark m-0">📊 Sistema de Reportes y Auditoría</h5>
+                    <button class="btn btn-outline-secondary btn-sm fw-bold" onclick="mostrarTabAdmin('admin-menu')">⬅ Menú Principal</button>
+                </div>
+                
+                <ul class="nav nav-pills mb-4 border-bottom pb-3" id="reportesTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active bg-info text-dark fw-bold border" id="kardex-tab" data-bs-toggle="pill" data-bs-target="#kardex-panel" type="button" role="tab">📦 Kárdex (Mov. Inventario)</button>
+                    </li>
+                    <li class="nav-item ms-2" role="presentation">
+                        <button class="nav-link bg-light text-dark fw-bold border" id="clientes-tab" data-bs-toggle="pill" data-bs-target="#clientes-panel" type="button" role="tab" onclick="this.classList.replace('bg-light','bg-info'); document.getElementById('kardex-tab').classList.replace('bg-info','bg-light');">👥 Compras por Cliente</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content">
+                    <!-- KARDEX -->
+                    <div class="tab-pane fade show active" id="kardex-panel" role="tabpanel">
+                        <div class="row g-3 mb-4 bg-light p-3 rounded border">
+                            <div class="col-md-3 position-relative">
+                                <label class="form-label small fw-bold text-secondary">PRODUCTO (NOMBRE/SKU)</label>
+                                <input type="text" id="rep-sku" class="form-control border-info" placeholder="Buscar producto..." onkeyup="filtrarProductosKardex()" autocomplete="off">
+                                <div id="resultados-kardex" class="list-group position-absolute w-100 shadow-lg mt-1" style="z-index: 1050;"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-secondary">DESDE FECHA</label>
+                                <input type="date" id="rep-desde" class="form-control border-secondary">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-secondary">HASTA FECHA</label>
+                                <input type="date" id="rep-hasta" class="form-control border-secondary">
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end gap-2">
+                                <button class="btn btn-info w-100 fw-bold border-dark" onclick="generarKardex()">Generar Reporte</button>
+                                <button class="btn btn-secondary border-dark" onclick="imprimirTablaHTML('Reporte Kárdex de Movimientos', 'tabla-kardex')">🖨️</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive bg-white rounded border">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead style="background-color: #f1f5f9;">
+                                    <tr>
+                                        <th class="ps-3 border-end">FECHA D/M/A</th>
+                                        <th class="border-end">DOC. / CONCEPTO</th>
+                                        <th class="text-danger text-center border-end" style="width:140px;">DESCARGAS</th>
+                                        <th class="text-primary text-center fw-bold border-end" style="width:140px;">SALDO FÍSICO</th>
+                                        <th class="text-success text-center" style="width:140px;">CARGAS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-kardex">
+                                    <tr><td colspan="5" class="text-center text-muted py-5">Esperando consulta de Kárdex...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- CLIENTES -->
+                    <div class="tab-pane fade" id="clientes-panel" role="tabpanel">
+                        <div class="row g-3 mb-4 bg-light p-3 rounded border">
+                            <div class="col-md-5">
+                                <label class="form-label small fw-bold text-secondary">ID DEL CLIENTE (V277...)</label>
+                                <div class="input-group">
+                                    <input type="text" id="rep-cliente-id" class="form-control border-secondary" placeholder="Ej: V2773333">
+                                    <button class="btn btn-dark fw-bold" onclick="generarReporteCliente()">Consultar</button>
+                                    <button class="btn btn-secondary fw-bold" onclick="imprimirTablaHTML('Historial de Compras de Cliente', 'tabla-rep-clientes')">🖨️</button>
+                                </div>
+                            </div>
+                            <div class="col-md-7 d-flex align-items-end px-3">
+                                <h4 class="fw-bold text-primary m-0" id="rep-cliente-nombre"></h4>
+                            </div>
+                        </div>
+                        <div class="table-responsive bg-white rounded border">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead style="background-color: #f1f5f9;">
+                                    <tr>
+                                        <th class="ps-3 border-end">N° PEDIDO</th>
+                                        <th class="border-end">FECHA</th>
+                                        <th class="border-end">FACTURADO</th>
+                                        <th class="border-end">ESTADO</th>
+                                        <th>VENDEDOR RESPONSABLE</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-rep-clientes">
+                                    <tr><td colspan="5" class="text-center text-muted py-5">Busca un cliente para consultar el historial de compras</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div id="main-section" class="d-none pt-4">
-            <div class="d-flex justify-content-end mb-3 no-print">
-                <button class="btn btn-outline-danger" onclick="logout()">🚪 Cerrar Sesión</button>
-            </div>
-            <div class="row mb-4 no-print">
-                <div class="col-md-6">
-                    <div class="card stat-card p-4 text-center">
-                        <h6>VALOR TOTAL EN BODEGA</h6>
-                        <h2 id="valor-total">$0.00</h2>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card p-4 text-center border-start border-primary border-5">
-                        <h6>PRODUCTOS REGISTRADOS</h6>
-                        <h2 id="total-items">0</h2>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card p-4 mb-4 no-print">
-                <h5 class="text-secondary mb-3">📦 Agregar Mercancía</h5>
-                <div class="row g-2">
-                    <div class="col-md-3"><input type="text" id="sku" class="form-control" placeholder="SKU"></div>
-                    <div class="col-md-4"><input type="text" id="nombre" class="form-control" placeholder="Nombre">
-                    </div>
-                    <div class="col-md-2"><input type="number" id="precio" class="form-control" placeholder="Precio $">
-                    </div>
-                    <div class="col-md-2"><input type="number" id="stock" class="form-control" placeholder="Cant.">
-                    </div>
-                    <div class="col-md-1"><button class="btn btn-primary w-100" onclick="crear()">+</button></div>
-                </div>
-            </div>
-
-            <div class="card p-4 mb-4 border-start border-warning border-5">
-                <h5 class="text-secondary mb-3 no-print">📝 Generador de Presupuesto</h5>
-                <div class="position-relative mb-3 no-print">
-                    <input type="text" id="buscar-presupuesto" class="form-control form-control-lg"
-                        placeholder="🔍 Buscar artículo para el presupuesto..." onkeyup="filtrarProductos()">
-                    <div id="resultados-busqueda" class="list-group position-absolute w-100"></div>
-                </div>
-
-                <table class="table align-middle mt-2">
-                    <thead class="table-warning">
-                        <tr>
-                            <th>ARTÍCULO</th>
-                            <th>CANT.</th>
-                            <th>PRECIO UNIT.</th>
-                            <th>SUBTOTAL</th>
-                            <th class="no-print"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-presupuesto">
-                    </tbody>
-                    <tfoot class="table-light">
-                        <tr>
-                            <td colspan="3" class="text-end"><strong>TOTAL A PAGAR:</strong></td>
-                            <td>
-                                <h4 id="total-presupuesto" class="text-success m-0">$0.00</h4>
-                            </td>
-                            <td class="no-print"></td>
-                        </tr>
-                    </tfoot>
+        <!-- Cajero View -->
+        <div id="cajero-section" class="d-none no-print">
+            <h4 class="mb-4 fw-bold text-warning">💳 Facturación de Pedidos</h4>
+            <div class="card p-4 shadow-sm border-top border-warning border-4 mb-5">
+                <h6 class="fw-bold mb-3 text-secondary text-uppercase">🧾 Cola de Pedidos (Por Cobrar)</h6>
+                <div class="table-responsive bg-dark rounded border border-secondary p-1">
+                <table class="table m-0">
+                    <thead class="table-dark"><tr><th>N° Pedido</th><th>Fecha</th><th>Cliente</th><th>Vendedor</th><th>Total a Pagar</th><th>Estado</th><th>Acción</th></tr></thead>
+                    <tbody id="tabla-pedidos-cajero"></tbody>
                 </table>
-                <button class="btn btn-warning w-100 mt-3 no-print" onclick="window.print()">🖨️ Generar PDF /
-                    Imprimir</button>
+                </div>
+            </div>
+            
+            <div class="card p-4 shadow-sm border-top border-secondary border-4">
+                <h6 class="fw-bold mb-3 text-secondary text-uppercase">🗄️ Historial de Facturas Elaboradas</h6>
+                <div class="table-responsive">
+                <table class="table opacity-75">
+                    <thead><tr><th>N° Pedido</th><th>Fecha</th><th>Cliente</th><th>Total Cobrado</th><th>Estado</th><th></th></tr></thead>
+                    <tbody id="tabla-pedidos-historial"></tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vendedor View -->
+        <div id="vendedor-section" class="d-none no-print">
+            <div class="card shadow-lg border-0 border-top border-success border-5 mt-2">
+                <div class="card-body p-4 p-md-5">
+                    <h3 class="mb-4 fw-bold text-success">📝 Módulo Toma de Pedidos</h3>
+                    
+                    <div class="mb-5 bg-dark p-4 rounded shadow-sm border border-secondary">
+                        <label class="form-label fw-bold text-light mb-2">IDENTIFICACIÓN DEL CLIENTE (EJ: V2773300)</label>
+                        <div class="input-group mb-3">
+                            <input type="text" id="cliente-id" class="form-control form-control-lg bg-black text-white border-0" placeholder="Ej: V27733000">
+                            <button class="btn btn-outline-success px-4 fw-bold" onclick="buscarCliente()">🔍 Buscar Cliente</button>
+                        </div>
+                        
+                        <div id="cliente-info-box" class="d-none mt-3 p-3 border border-success rounded bg-black">
+                            <p class="mb-1 text-success small fw-bold">✓ CLIENTE ENCONTRADO EN SISTEMA</p>
+                            <h4 id="cliente-nombre-display" class="text-white mb-0"></h4>
+                            <input type="hidden" id="cliente-nombre">
+                        </div>
+                        
+                        <div id="cliente-nuevo-box" class="d-none mt-3 p-3 border border-warning rounded bg-black">
+                            <p class="mb-2 text-warning small fw-bold">⚠️ CÓDIGO NO REGISTRADO. INGRESE DATOS PARA GUARDAR Y CONTINUAR:</p>
+                            <div class="row g-2">
+                                <div class="col-md-5"><input type="text" id="nuevo-cli-nombre" class="form-control form-control-sm" placeholder="Nombre(s) del cliente"></div>
+                                <div class="col-md-5"><input type="text" id="nuevo-cli-apellido" class="form-control form-control-sm" placeholder="Apellido(s)"></div>
+                                <div class="col-md-2"><button class="btn btn-warning w-100 btn-sm h-100 fw-bold text-dark" onclick="registrarNuevoCliente()">Guardar</button></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h6 class="fw-bold text-secondary mb-3 text-uppercase">Búsqueda Rápida de Inventario</h6>
+                    <div class="position-relative mb-4">
+                        <input type="text" id="buscar-producto" class="form-control form-control-lg border-success" placeholder="🔍 Escribe código o descripción para buscar..." onkeyup="filtrarProductosVendedor()">
+                        <div id="resultados-busqueda" class="list-group position-absolute w-100 shadow-lg" style="z-index: 10;"></div>
+                    </div>
+
+                    <div class="table-responsive rounded border border-secondary">
+                        <table class="table m-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th class="ps-3 border-end border-secondary">CÓDIGO</th>
+                                    <th class="border-end border-secondary">DESCRIPCIÓN</th>
+                                    <th class="border-end border-secondary">PRECIO UNI.</th>
+                                    <th style="width: 140px;" class="border-end border-secondary text-center">CANTIDAD</th>
+                                    <th class="border-end border-secondary">SUBTOTAL</th>
+                                    <th class="text-center">X</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-pedido-vendedor"></tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="bg-dark p-4 rounded mt-4 border border-secondary d-flex flex-column align-items-end">
+                        <p class="text-secondary fw-bold mb-1">MONTO TOTAL ESTIMADO</p>
+                        <h1 class="text-success fw-bold mb-4" id="total-pedido-vendedor">$0.00</h1>
+                        <button class="btn btn-success btn-lg px-5 shadow fw-bold" onclick="procesarPedido()">✅ Confirmar y Enviar a Caja</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Ajuste Stock -->
+        <div class="modal fade" id="ajusteModal" tabindex="-1" data-bs-theme="dark">
+            <div class="modal-dialog">
+                <div class="modal-content shadow-lg border border-secondary">
+                    <div class="modal-header border-bottom border-secondary">
+                        <h5 class="modal-title fw-bold">Gestión de Stock: <span id="mod-sku" class="text-warning"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <label class="form-label text-secondary fw-bold small">TIPO DE MOVIMIENTO</label>
+                            <select id="mod-tipo" class="form-select form-select-lg bg-dark">
+                                <option value="carga">📥 Carga (Añadir mercancía detectada)</option>
+                                <option value="descarga">📤 Descarga (Restar por deterioro/merma)</option>
+                                <option value="ajuste">⚙️ Ajuste Físico (Sobrescribir cantidad exacta)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary fw-bold small">CANTIDAD AFECTADA</label>
+                            <input type="number" id="mod-cant" class="form-control form-control-lg fw-bold text-center" min="0" value="0">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top border-secondary">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-warning fw-bold text-dark px-4" onclick="guardarAjuste()">Ejecutar Orden</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Editar Producto -->
+        <div class="modal fade" id="editarProductoModal" tabindex="-1" data-bs-theme="dark">
+            <div class="modal-dialog">
+                <div class="modal-content shadow-lg border border-secondary">
+                    <div class="modal-header border-bottom border-info">
+                        <h5 class="modal-title fw-bold">Editar Producto: <span id="edit-sku" class="text-info"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label text-secondary fw-bold small">DESCRIPCIÓN / NOMBRE</label>
+                            <input type="text" id="edit-nombre" class="form-control bg-dark">
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label text-secondary fw-bold small">COSTO $</label>
+                                <input type="number" id="edit-costo" class="form-control text-danger fw-bold bg-dark">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label text-secondary fw-bold small">PRECIO VENTA $</label>
+                                <input type="number" id="edit-precio" class="form-control text-success fw-bold bg-dark">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top border-secondary">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-info fw-bold text-dark px-4" onclick="guardarEdicionProducto()">Guardar Cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Editar Cliente -->
+        <div class="modal fade" id="editarClienteModal" tabindex="-1" data-bs-theme="dark">
+            <div class="modal-dialog">
+                <div class="modal-content shadow-lg border border-secondary">
+                    <div class="modal-header border-bottom border-primary">
+                        <h5 class="modal-title fw-bold">Modificar Cliente: <span id="edit-cli-id" class="text-primary"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label text-secondary fw-bold small">NOMBRE(S)</label>
+                            <input type="text" id="edit-cli-nombre" class="form-control bg-dark">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary fw-bold small">APELLIDO(S)</label>
+                            <input type="text" id="edit-cli-apellido" class="form-control bg-dark">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top border-secondary">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary fw-bold text-white px-4" onclick="guardarEdicionCliente()">Guardar Cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Factura View (Para imprimir PDF) -->
+        <div id="factura-contenedor" style="display:none;" class="bg-white p-5 rounded">
+            <div class="factura-header d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                <div>
+                    <h2 class="fw-bold mb-0 text-dark">FACTURA DE VENTA</h2>
+                    <p class="text-muted m-0 fs-5">Ticket N° <span id="factura-id" class="text-dark fw-bold"></span></p>
+                </div>
+                <div class="text-end text-muted">
+                    <p class="m-0 fw-bold fs-5 text-dark">habiCM. ERP Corporativo</p>
+                    <p class="m-0">Emisión: <span id="factura-fecha"></span></p>
+                </div>
+            </div>
+            
+            <div class="row mb-5 bg-light p-3 rounded border">
+                <div class="col-sm-8">
+                    <h6 class="fw-bold text-secondary text-uppercase small">Facturado A:</h6>
+                    <div id="factura-cliente" class="fs-4 fw-bold text-dark"></div>
+                </div>
+                <div class="col-sm-4 text-end">
+                    <h6 class="fw-bold text-secondary text-uppercase small">Atendido Por:</h6>
+                    <div id="factura-vendedor" class="fs-5 text-dark"></div>
+                </div>
             </div>
 
-            <div class="card p-4 no-print">
-                <h5 class="text-secondary mb-3">📋 Inventario Completo</h5>
-                <table class="table align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>SKU</th>
-                            <th>PRODUCTO</th>
-                            <th>PRECIO UNIT.</th>
-                            <th>STOCK</th>
-                            <th>ACCIONES</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla"></tbody>
-                </table>
+            <table class="table table-bordered mb-4 border-dark">
+                <thead class="table-light">
+                    <tr><th class="text-center">CANT.</th><th>CÓDIGO</th><th>DESCRIPCIÓN</th><th class="text-end">PRECIO UNI.</th><th class="text-end">SUBTOTAL</th></tr>
+                </thead>
+                <tbody id="factura-items"></tbody>
+            </table>
+            
+            <div class="text-end pt-3">
+                <h3 class="fw-bold text-dark m-0">TOTAL FACTURADO: <span id="factura-total" class="text-success ms-2"></span></h3>
+            </div>
+
+            <div class="mt-5 text-center no-print border-top pt-4">
+                <button id="btn-facturar-accion" class="btn btn-primary px-4 me-2 fw-bold" onclick="ejecutarFacturacion()">💳 Finalizar y Cobrar</button>
+                <button class="btn btn-outline-dark px-4 me-2 fw-bold" onclick="window.print()">🖨️ Imprimir Factura</button>
+                <button class="btn btn-outline-secondary px-4" onclick="cerrarFactura()">Cerrar Visor</button>
             </div>
         </div>
     </div>
 
     <script>
-        let TOKEN = "";
         const API = "http://127.0.0.1:8000";
+        let TOKEN = localStorage.getItem('token') || "";
+        let USER_ROLE = localStorage.getItem('rol') || "";
+        let USERNAME = localStorage.getItem('username') || "";
+        
         let productosBase = [];
-        let carritoPresupuesto = [];
+        let carritoPedido = [];
+        let pedidosDataGlobal = [];
+        let indexPedidoFacturando = -1;
+        let pAjusteModal = null; 
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: '#1E293B',
+            color: '#F8FAFC'
+        });
+
+        function MsgOk(msg) { Swal.fire({ title: '¡Éxito!', text: msg, icon: 'success', background: '#1E293B', color: '#F8FAFC', confirmButtonColor: '#10B981' }); }
+        function MsgErr(msg) { Swal.fire({ title: 'Error', text: msg, icon: 'error', background: '#1E293B', color: '#F8FAFC', confirmButtonColor: '#EF4444' }); }
+        function MsgWarn(msg) { Swal.fire({ title: 'Atención', text: msg, icon: 'warning', background: '#1E293B', color: '#F8FAFC', confirmButtonColor: '#F59E0B' }); }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if(TOKEN) checkSession();
+            pAjusteModal = new bootstrap.Modal(document.getElementById('ajusteModal'));
+        });
+
+        function checkSession() {
+            document.getElementById('login-section').classList.add('d-none');
+            document.getElementById('navbar').classList.remove('d-none');
+            document.getElementById('nav-user-info').innerText = USERNAME;
+            document.getElementById('nav-role-badge').innerText = USER_ROLE.toUpperCase();
+
+            document.getElementById('admin-section').classList.add('d-none');
+            document.getElementById('cajero-section').classList.add('d-none');
+            document.getElementById('vendedor-section').classList.add('d-none');
+
+            document.querySelector('.logo-login').classList.remove('no-print');
+
+            if (USER_ROLE === "admin") {
+                document.getElementById('admin-section').classList.remove('d-none');
+                mostrarTabAdmin('admin-menu'); 
+                cargarInventarioMudo();
+            } else if (USER_ROLE === "cajero") {
+                document.getElementById('cajero-section').classList.remove('d-none');
+                cargarPedidosCajero();
+            } else if (USER_ROLE === "vendedor") {
+                document.getElementById('vendedor-section').classList.remove('d-none');
+                cargarInventarioSilencioso();
+            }
+        }
 
         async function login() {
+            const desiredPortal = document.querySelector('input[name="portal-type"]:checked').value;
             const formData = new FormData();
             formData.append('username', document.getElementById('user').value);
             formData.append('password', document.getElementById('pass').value);
 
-            const res = await fetch(`${API}/login`, { method: 'POST', body: formData });
-            if (res.ok) {
-                const data = await res.json();
-                TOKEN = data.access_token;
-                document.getElementById('login-section').classList.add('d-none');
-                document.getElementById('main-section').classList.remove('d-none');
-                cargar();
-            } else { alert("Acceso denegado"); }
+            try {
+                const res = await fetch(`${API}/login`, { method: 'POST', body: formData });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.rol !== desiredPortal && data.rol !== 'admin') {
+                        return MsgErr(`Intentas entrar al portal de '${desiredPortal}' pero tu rol oficial es '${data.rol}'. Acceso denegado.`);
+                    }
+                    TOKEN = data.access_token;
+                    USER_ROLE = data.rol; 
+                    if (data.rol === 'admin') USER_ROLE = desiredPortal;
+
+                    USERNAME = data.username;
+                    localStorage.setItem('token', TOKEN);
+                    localStorage.setItem('rol', USER_ROLE);
+                    localStorage.setItem('username', USERNAME);
+                    Toast.fire({ icon: 'success', title: 'Sesión iniciada correctamente' });
+                    checkSession();
+                } else { MsgErr("Credenciales incorrectas, intenta de nuevo."); }
+            } catch (error) { MsgErr("Servidor no en línea. Recuerda ejecutar uvicorn."); }
         }
 
         function logout() {
-            TOKEN = "";
-            document.getElementById('pass').value = ""; // Limpiar la contraseña por seguridad
-            document.getElementById('login-section').classList.remove('d-none');
-            document.getElementById('main-section').classList.add('d-none');
+            TOKEN = ""; USER_ROLE = ""; USERNAME = "";
+            localStorage.clear();
+            location.reload();
         }
 
-        async function cargar() {
-            const res = await fetch(`${API}/productos/`);
-            productosBase = await res.json();
+        function mostrarTabAdmin(tabId) {
+            document.querySelectorAll('.admin-tab').forEach(el => el.classList.add('d-none'));
+            document.getElementById(tabId).classList.remove('d-none');
+            if (tabId === 'tab-usuarios') cargarUsuarios();
+            if (tabId === 'tab-historial') cargarPedidosCajeroDoble();
+            if (tabId === 'tab-inventario') cargarInventario();
+            if (tabId === 'admin-menu') cargarInventarioMudo();
+        }
 
-            let html = "";
-            let totalDinero = 0;
+        async function fetchAPI(endpoint, options = {}) {
+            options.headers = { ...options.headers, 'Authorization': `Bearer ${TOKEN}` };
+            if (options.body && typeof options.body === 'object' && !(options.body instanceof FormData)) {
+                options.headers['Content-Type'] = 'application/json';
+                options.body = JSON.stringify(options.body);
+            }
+            const res = await fetch(API + endpoint, options);
+            if(res.status === 401 || res.status === 403) { logout(); return; }
+            if(!res.ok) { throw new Error( (await res.json()).detail || "Error interno del servidor" ); }
+            return res.json();
+        }
 
-            productosBase.forEach(p => {
-                totalDinero += (p.precio * p.stock);
-                const stockClass = p.stock < 5 ? 'badge-low' : 'bg-success';
+        // --- INVENTARIO ---
+        async function cargarInventarioMudo() {
+            try {
+                productosBase = await fetchAPI('/productos/');
+                let totalDinero = 0;
+                productosBase.forEach(p => totalDinero += (p.costo * p.stock));
+                document.getElementById('valor-total').innerText = `$${totalDinero.toLocaleString()}`;
+                document.getElementById('total-items').innerText = productosBase.length;
+            } catch(e) {}
+        }
 
-                html += `
+        async function cargarInventario() {
+            try {
+                productosBase = await fetchAPI('/productos/');
+                let html = "";
+                productosBase.forEach(p => {
+                    const stockClass = p.stock <= 0 ? 'bg-danger text-white' : (p.stock < 5 ? 'bg-warning text-dark' : 'bg-success text-white');
+                    html += `<tr>
+                        <td class="ps-3"><code class="fs-6 fw-bold text-white">${p.sku}</code></td>
+                        <td><strong>${p.nombre}</strong></td>
+                        <td class="text-danger fw-bold">$${(p.costo || 0).toLocaleString()}</td>
+                        <td class="text-success fw-bold">$${p.precio.toLocaleString()}</td>
+                        <td><span class="badge ${stockClass}">${p.stock}</span></td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-info fw-bold text-white me-1" onclick="abrirEditarProducto('${p.sku}')" title="Editar Producto">✏️</button>
+                                <button class="btn btn-sm btn-outline-danger fw-bold text-white me-1" onclick="eliminarProducto('${p.sku}')" title="Eliminar Producto">🗑️</button>
+                                <button class="btn btn-sm btn-outline-warning fw-bold text-white" onclick="abrirAjuste('${p.sku}')">⚙️ Carga / Descarga / Ajuste</button>
+                            </div>
+                        </td>
+                    </tr>`;
+                });
+                document.getElementById('tabla-inventario').innerHTML = html;
+            } catch(e) { }
+        }
+
+        async function cargarInventarioSilencioso() {
+            try { productosBase = await fetchAPI('/productos/'); } catch(e){}
+        }
+
+        async function crearProducto() {
+            const sku = document.getElementById('sku').value;
+            const nombre = document.getElementById('nombre').value;
+            const costo = document.getElementById('costo').value || 0;
+            const precio = document.getElementById('precio').value;
+            const stock = document.getElementById('stock').value;
+            try {
+                await fetchAPI(`/productos/?sku=${sku}&nombre=${nombre}&costo=${costo}&precio=${precio}&stock=${stock}`, { method: 'POST' });
+                MsgOk("Artículo guardado y añadido a la base de datos.");
+                ['sku','nombre','costo','precio','stock'].forEach(id => document.getElementById(id).value = '');
+            } catch(e) { MsgErr(e.message); }
+        }
+
+        function abrirAjuste(sku) {
+            document.getElementById('mod-sku').innerText = sku;
+            document.getElementById('mod-cant').value = "0";
+            pAjusteModal.show();
+        }
+
+        async function guardarAjuste() {
+            const sku = document.getElementById('mod-sku').innerText;
+            const data = { tipo: document.getElementById('mod-tipo').value, cantidad: parseInt(document.getElementById('mod-cant').value) };
+            try {
+                await fetchAPI(`/productos/${sku}/ajustar`, { method: 'POST', body: data });
+                pAjusteModal.hide();
+                Toast.fire({ icon: 'success', title: 'Stock actualizado con éxito' });
+                cargarInventario();
+            } catch(e) { MsgErr(e.message); }
+        }
+
+        // --- USUARIOS ---
+        async function cargarUsuarios() {
+            try {
+                const data = await fetchAPI('/usuarios/');
+                document.getElementById('tabla-usuarios').innerHTML = data.map(u => `
+                    <tr><td class="fw-bold ps-3">${u.username}</td><td><span class="badge bg-secondary">${u.rol.toUpperCase()}</span></td></tr>
+                `).join('');
+            } catch(e) {}
+        }
+
+        async function crearUsuario() {
+            const user = document.getElementById('new-user').value;
+            const pass = document.getElementById('new-pass').value;
+            const rol = document.getElementById('new-role').value;
+            try {
+                await fetchAPI(`/usuarios/?username=${user}&password=${pass}&rol=${rol}`, { method: 'POST' });
+                cargarUsuarios();
+                Toast.fire({ icon: 'success', title: 'Empleado creado y registrado.' });
+                document.getElementById('new-user').value = '';
+                document.getElementById('new-pass').value = '';
+            } catch(e) { MsgErr(e.message); }
+        }
+
+        // --- CAJERO & ADMIN (FACTURACIÓN) ---
+        async function cargarPedidosCajeroDoble() {
+            try {
+                pedidosDataGlobal = await fetchAPI('/pedidos/');
+                const tr = p => `
+                        <tr>
+                            <td class="fw-bold ps-3">#${p.id}</td><td class="small opacity-75">${p.fecha}</td>
+                            <td><strong>${p.cliente}</strong></td><td>👤 ${p.vendedor}</td>
+                            <td class="fw-bold text-success">$${p.total.toLocaleString()}</td>
+                            <td><button class="btn btn-sm btn-outline-info text-white" onclick="prepararFactura(${pedidosDataGlobal.indexOf(p)})">Ver Documento</button></td>
+                        </tr>
+                    `;
+                document.getElementById('tabla-pedidos-admin').innerHTML = pedidosDataGlobal.map(tr).join('');
+            } catch(e) {}
+        }
+
+        async function cargarPedidosCajero() {
+            try {
+                pedidosDataGlobal = await fetchAPI('/pedidos/');
+                const pendientes = pedidosDataGlobal.filter(p => p.estado === 'Pendiente');
+                const facturados = pedidosDataGlobal.filter(p => p.estado === 'Facturado');
+
+                const renderTbody = lista => lista.map(p => `
+                        <tr>
+                            <td class="fw-bold ps-3">#${p.id}</td><td class="small opacity-75">${p.fecha}</td>
+                            <td><strong>${p.cliente}</strong></td><td>👤 ${p.vendedor}</td>
+                            <td class="text-success fw-bold">$${p.total.toLocaleString()}</td>
+                            <td><span class="badge ${p.estado==='Facturado'?'bg-success':'bg-warning text-dark'}">${p.estado}</span></td>
+                            <td><button class="btn btn-sm ${p.estado==='Facturado'?'btn-outline-primary text-white':'btn-warning text-dark fw-bold'}" onclick="prepararFactura(${pedidosDataGlobal.indexOf(p)})">
+                                ${p.estado==='Facturado'? '📄 Visor' : '💳 Facturar Pago'}
+                            </button></td>
+                        </tr>
+                    `).join('');
+
+                document.getElementById('tabla-pedidos-cajero').innerHTML = renderTbody(pendientes);
+                document.getElementById('tabla-pedidos-historial').innerHTML = renderTbody(facturados);
+            } catch(e) { }
+        }
+
+        function prepararFactura(idx) {
+            indexPedidoFacturando = idx;
+            const ped = pedidosDataGlobal[idx];
+            
+            // Ocultar solo las secciones de la app, sin ocultar los botones de la factura
+            document.getElementById('navbar').classList.add('d-none');
+            document.getElementById('admin-section').classList.add('d-none');
+            document.getElementById('cajero-section').classList.add('d-none');
+            document.getElementById('vendedor-section').classList.add('d-none');
+            document.querySelector('.logo-login').classList.add('d-none');
+            
+            document.getElementById('factura-contenedor').style.display = 'block';
+
+            document.getElementById('factura-id').innerText = String(ped.id).padStart(6, '0');
+            document.getElementById('factura-fecha').innerText = ped.fecha.split(' ')[0] || ped.fecha;
+            document.getElementById('factura-cliente').innerText = ped.cliente;
+            document.getElementById('factura-vendedor').innerText = ped.vendedor;
+            document.getElementById('factura-total').innerText = `$${ped.total.toLocaleString()}`;
+
+            document.getElementById('factura-items').innerHTML = ped.detalles.map(d => `
                 <tr>
-                    <td><code class="text-primary">${p.sku}</code></td>
-                    <td><strong>${p.nombre}</strong></td>
-                    <td>$${p.precio.toLocaleString()}</td>
-                    <td><span class="badge ${stockClass} p-2">${p.stock} unidades</span></td>
-                    <td><button class="btn btn-sm btn-outline-danger" onclick="eliminar('${p.sku}')">Borrar</button></td>
-                </tr>`;
-            });
+                    <td class="text-center">${d.cantidad}</td>
+                    <td><code>${d.sku}</code></td><td><strong>${d.nombre}</strong></td>
+                    <td class="text-end">$${d.precio_unitario.toLocaleString()}</td><td class="text-end fw-bold text-dark">$${d.subtotal.toLocaleString()}</td>
+                </tr>
+            `).join('');
 
-            document.getElementById('tabla').innerHTML = html;
-            document.getElementById('valor-total').innerText = `$${totalDinero.toLocaleString()}`;
-            document.getElementById('total-items').innerText = productosBase.length;
+            const btn = document.getElementById('btn-facturar-accion');
+            if (ped.estado === 'Pendiente' && USER_ROLE === 'cajero') {
+                btn.style.display = 'inline-block';
+                btn.className = "btn btn-primary px-4 me-2 fw-bold";
+                btn.innerHTML = "💳 Finalizar y Cobrar";
+            } else {
+                btn.style.display = 'none';
+            }
         }
 
-        // --- LÓGICA DE PRESUPUESTO (SAINT STYLE) ---
-        function filtrarProductos() {
-            const busqueda = document.getElementById('buscar-presupuesto').value.toLowerCase();
-            const divResultados = document.getElementById('resultados-busqueda');
+        async function ejecutarFacturacion() {
+            const ped = pedidosDataGlobal[indexPedidoFacturando];
+            if (ped.estado === 'Pendiente' && USER_ROLE === 'cajero') {
+                try {
+                    await fetchAPI(`/pedidos/${ped.id}/facturar`, { method: 'POST' });
+                    ped.estado = 'Facturado';
+                    Toast.fire({ icon: 'success', title: 'Pago recibido. Pedido Facturado.' });
+                    cerrarFactura();
+                } catch(e) { return MsgErr(e.message); }
+            }
+        }
 
-            if (busqueda.length < 1) { divResultados.innerHTML = ""; return; }
+        function cerrarFactura() {
+            document.getElementById('factura-contenedor').style.display = 'none';
+            document.querySelector('.logo-login').classList.remove('d-none');
+            checkSession(); 
+        }
 
-            const sugerencias = productosBase.filter(p =>
-                p.nombre.toLowerCase().includes(busqueda) || p.sku.toLowerCase().includes(busqueda)
-            );
+        // --- VENDEDOR (PEDIDOS) ---
+        function filtrarProductosVendedor() {
+            const input = document.getElementById('buscar-producto').value.toLowerCase();
+            const div = document.getElementById('resultados-busqueda');
+            if (input.length < 2) { div.innerHTML = ""; return; }
 
-            divResultados.innerHTML = sugerencias.map(p => `
-                <button class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" 
-                        onclick="agregarAlPresupuesto('${p.sku}')">
+            const resul = productosBase.filter(p => p.stock > 0 && (p.nombre.toLowerCase().includes(input) || p.sku.toLowerCase().includes(input)));
+            div.innerHTML = resul.map(p => `
+                <button class="list-group-item list-group-item-action bg-dark text-white border-start border-success border-4 d-flex justify-content-between my-1" onclick="agregarAlPedido('${p.sku}')">
                     <span><strong>${p.sku}</strong> - ${p.nombre}</span>
-                    <span class="badge bg-primary">$${p.precio}</span>
+                    <div><span class="badge bg-success me-2">$${p.precio}</span><span class="opacity-75 small">Disponibles: ${p.stock}</span></div>
                 </button>
             `).join('');
         }
 
-        function agregarAlPresupuesto(sku) {
-            const producto = productosBase.find(p => p.sku === sku);
-            const existe = carritoPresupuesto.find(item => item.sku === sku);
-
+        function agregarAlPedido(sku) {
+            const p = productosBase.find(i => i.sku === sku);
+            const existe = carritoPedido.find(i => i.sku === sku);
             if (existe) {
-                existe.cantidad++;
-            } else {
-                carritoPresupuesto.push({ ...producto, cantidad: 1 });
+                if(existe.cantidad < p.stock) {
+                    existe.cantidad++;
+                } else {
+                    MsgWarn("No hay suficiente inventario disponible en el almacén.");
+                }
+            } else { 
+                carritoPedido.push({ ...p, cantidad: 1 }); 
             }
-
-            document.getElementById('buscar-presupuesto').value = "";
+            document.getElementById('buscar-producto').value = "";
             document.getElementById('resultados-busqueda').innerHTML = "";
-            actualizarTablaPresupuesto();
+            actualizarTablaPedido();
         }
 
-        function actualizarTablaPresupuesto() {
-            const tabla = document.getElementById('tabla-presupuesto');
-            let total = 0;
-
-            tabla.innerHTML = carritoPresupuesto.map((item, index) => {
-                const subtotal = item.precio * item.cantidad;
-                total += subtotal;
-                return `
-                    <tr>
-                        <td><strong>${item.nombre}</strong><br><small class="text-muted">${item.sku}</small></td>
-                        <td><input type="number" value="${item.cantidad}" class="form-control form-control-sm w-75 no-print" 
-                             onchange="cambiarCantidad(${index}, this.value)">
-                             <span class="d-none d-print-block">${item.cantidad}</span></td>
-                        <td>$${item.precio.toLocaleString()}</td>
-                        <td><strong>$${subtotal.toLocaleString()}</strong></td>
-                        <td class="no-print text-center"><button class="btn btn-sm text-danger" onclick="quitarDelPresupuesto(${index})">✕</button></td>
-                    </tr>`;
+        function actualizarTablaPedido() {
+            let t = 0;
+            document.getElementById('tabla-pedido-vendedor').innerHTML = carritoPedido.map((i, idx) => {
+                const sub = i.precio * i.cantidad; t += sub;
+                return `<tr>
+                    <td class="ps-3 border-end border-secondary"><code>${i.sku}</code></td>
+                    <td class="fw-bold border-end border-secondary">${i.nombre}</td>
+                    <td class="text-success border-end border-secondary">$${i.precio.toLocaleString()}</td>
+                    <td class="border-end border-secondary"><input type="number" class="form-control form-control-sm text-center bg-black text-white border-secondary" value="${i.cantidad}" onchange="cambiarCantidadPedido(${idx}, this.value, ${i.stock})"></td>
+                    <td class="fw-bold text-success border-end border-secondary">$${sub.toLocaleString()}</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger px-3 shadow" onclick="quitarDelPedido(${idx})">X</button></td>
+                </tr>`;
             }).join('');
-
-            document.getElementById('total-presupuesto').innerText = `$${total.toLocaleString()}`;
+            document.getElementById('total-pedido-vendedor').innerText = `$${t.toLocaleString()}`;
         }
 
-        function cambiarCantidad(index, valor) {
-            if (valor < 1) return;
-            carritoPresupuesto[index].cantidad = parseInt(valor);
-            actualizarTablaPresupuesto();
+        function cambiarCantidadPedido(idx, val, max) {
+            val = parseInt(val) || 1;
+            if (val > max) { 
+                MsgWarn(`Stock local máximo comprobado: ${max} unidades.`); 
+                val = max; 
+            }
+            if (val < 1) val = 1;
+            carritoPedido[idx].cantidad = val;
+            actualizarTablaPedido();
         }
 
-        function quitarDelPresupuesto(index) {
-            carritoPresupuesto.splice(index, 1);
-            actualizarTablaPresupuesto();
+        function quitarDelPedido(idx) { 
+            carritoPedido.splice(idx, 1); 
+            actualizarTablaPedido(); 
         }
 
-        // --- CRUD BÁSICO ---
-        async function crear() {
-            const sku = document.getElementById('sku').value;
-            const nombre = document.getElementById('nombre').value;
-            const precio = document.getElementById('precio').value;
-            const stock = document.getElementById('stock').value;
-            const url = `${API}/productos/?sku=${sku}&nombre=${nombre}&precio=${precio}&stock=${stock}`;
+        async function procesarPedido() {
+            const cliName = document.getElementById('cliente-nombre').value.trim();
+            const cliId = document.getElementById('cliente-id').value.trim();
+            if (!cliId || !cliName) return MsgWarn("Debes validar la identificación del cliente antes de enviar a caja.");
+            if (carritoPedido.length === 0) return MsgWarn("El carrito del pedido está vacío.");
 
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${TOKEN}` }
+            const items = carritoPedido.map(i => ({ sku: i.sku, cantidad: parseInt(i.cantidad) }));
+            try {
+                const res = await fetchAPI('/pedidos/', { method: 'POST', body: { cliente: cliName, cliente_id: cliId, detalles: items } });
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Orden Generada y Despachada!',
+                    html: `El pedido está esperando ahora por revisión del cajero en caja.<br><br><b>N° de Referencia:</b> #${res.pedido_id}`,
+                    background: '#1E293B',
+                    color: '#F8FAFC',
+                    confirmButtonColor: '#10B981'
+                });
+
+                document.getElementById('cliente-id').value = "";
+                document.getElementById('cliente-nombre').value = "";
+                document.getElementById('cliente-info-box').classList.add('d-none');
+                
+                carritoPedido = [];
+                actualizarTablaPedido();
+                cargarInventarioSilencioso();
+            } catch(e) { MsgErr(e.message); }
+        }
+
+        // --- FUNCIONES COMPLETAS ---
+        async function buscarCliente() {
+            const id = document.getElementById('cliente-id').value.trim();
+            const infoBox = document.getElementById('cliente-info-box');
+            const newBox = document.getElementById('cliente-nuevo-box');
+            
+            if(!id) return MsgWarn("Ingrese una identificación válida.");
+            
+            try {
+                const res = await fetchAPI(`/clientes/${id}`);
+                const nombreCompleto = `${res.nombre} ${res.apellido}`;
+                document.getElementById('cliente-nombre-display').innerText = nombreCompleto;
+                document.getElementById('cliente-nombre').value = nombreCompleto; 
+                infoBox.classList.remove('d-none');
+                newBox.classList.add('d-none');
+                Toast.fire({ icon: 'success', title: 'Cliente validado' });
+            } catch(e) {
+                // Not found
+                infoBox.classList.add('d-none');
+                newBox.classList.remove('d-none');
+                document.getElementById('nuevo-cli-nombre').value = "";
+                document.getElementById('nuevo-cli-apellido').value = "";
+                Toast.fire({ icon: 'info', title: 'Cliente no registrado. Por favor créalo.' });
+            }
+        }
+        
+        async function registrarNuevoCliente() {
+            const id = document.getElementById('cliente-id').value.trim();
+            const nom = document.getElementById('nuevo-cli-nombre').value.trim();
+            const ape = document.getElementById('nuevo-cli-apellido').value.trim();
+            
+            if(!id || !nom || !ape) return MsgWarn("Todos los campos para el nuevo cliente son obligatorios");
+            
+            try {
+                await fetchAPI('/clientes/', { method: 'POST', body: { identificacion: id, nombre: nom, apellido: ape } });
+                Toast.fire({ icon: 'success', title: 'Cliente guardado correctamente' });
+                buscarCliente(); // to auto configure view
+            } catch(e) { MsgErr(e.message); }
+        }
+
+        async function generarKardex() {
+            const sku = document.getElementById('rep-sku').value.trim();
+            const desde = document.getElementById('rep-desde').value;
+            const hasta = document.getElementById('rep-hasta').value;
+            if(!sku) return MsgWarn("El SKU del producto es obligatorio.");
+            
+            let url = `/reportes/movimientos/${sku}?`;
+            if(desde) url += `desde=${desde}&`;
+            if(hasta) url += `hasta=${hasta}`;
+            
+            try {
+                const data = await fetchAPI(url);
+                const tb = document.getElementById('tabla-kardex');
+                if(data.length === 0) {
+                    tb.innerHTML = `<tr><td colspan="5" class="text-center py-5">No hay movimientos en este periodo o artículo no existe.</td></tr>`;
+                    return;
+                }
+                tb.innerHTML = data.map(m => `
+                    <tr>
+                        <td class="ps-3"><small class="text-muted fw-bold">${m.fecha}</small></td>
+                        <td class="fw-bold text-light">${m.concepto}</td>
+                        <td class="text-danger text-center fw-bold fs-5">${m.descarga > 0 ? m.descarga : '-'}</td>
+                        <td class="text-primary text-center fw-bold fs-3 bg-light">${m.saldo}</td>
+                        <td class="text-success text-center fw-bold fs-5">${m.carga > 0 ? m.carga : '-'}</td>
+                    </tr>
+                `).join('');
+            } catch(e) { MsgErr(e.message); }
+        }
+
+        async function generarReporteCliente() {
+            const id = document.getElementById('rep-cliente-id').value.trim();
+            if(!id) return MsgWarn("Ingrese la identificación del cliente.");
+            
+            try {
+                const data = await fetchAPI(`/reportes/clientes/${id}`);
+                document.getElementById('rep-cliente-nombre').innerHTML = `👤 ${data.cliente} <button class="btn btn-sm btn-outline-primary ms-3" onclick="abrirEditarCliente('${id}')">✏️ Editar Info</button>`;
+                const tb = document.getElementById('tabla-rep-clientes');
+                if(data.compras.length === 0) {
+                    tb.innerHTML = `<tr><td colspan="5" class="text-center py-5">Este cliente no registra compras.</td></tr>`;
+                    return;
+                }
+                tb.innerHTML = data.compras.map(c => `
+                    <tr>
+                        <td class="ps-3 fw-bold text-dark">#${c.id}</td>
+                        <td class="text-muted">${c.fecha}</td>
+                        <td class="text-success fw-bold fs-5">$${c.total.toLocaleString()}</td>
+                        <td><span class="badge ${c.estado === 'Facturado' ? 'bg-success' : 'bg-warning text-dark'} px-2 py-1">${c.estado}</span></td>
+                        <td class="opacity-75">${c.vendedor}</td>
+                    </tr>
+                `).join('');
+            } catch(e) { MsgErr(e.message); }
+        }
+
+        function filtrarProductosKardex() {
+            const input = document.getElementById('rep-sku').value.toLowerCase();
+            const div = document.getElementById('resultados-kardex');
+            if (input.length < 2) { div.innerHTML = ""; return; }
+
+            const resul = productosBase.filter(p => p.nombre.toLowerCase().includes(input) || p.sku.toLowerCase().includes(input));
+            div.innerHTML = resul.map(p => `
+                <button class="list-group-item list-group-item-action bg-white text-dark border-start border-info border-4" onclick="seleccionarProductoKardex('${p.sku}')">
+                    <strong>${p.sku}</strong> - ${p.nombre}
+                </button>
+            `).join('');
+        }
+
+        function seleccionarProductoKardex(sku) {
+            document.getElementById('rep-sku').value = sku;
+            document.getElementById('resultados-kardex').innerHTML = "";
+        }
+
+        async function eliminarProducto(sku) {
+            const res = await Swal.fire({
+                title: `¿Eliminar ${sku}?`,
+                text: "Esta acción borrará irrevocablemente el producto, su stock y todo su Kárdex asociado.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, borrar del sistema',
+                cancelButtonText: 'Cancelar',
+                background: '#1e1e2d',
+                color: '#fff'
             });
 
-            if (res.ok) {
-                cargar();
-                document.getElementById('sku').value = "";
-                document.getElementById('nombre').value = "";
-                document.getElementById('precio').value = "";
-                document.getElementById('stock').value = "";
-            } else { alert("Error: Revisa si el SKU ya existe"); }
+            if(res.isConfirmed) {
+                try {
+                    await fetchAPI(`/productos/${sku}`, { method: 'DELETE' });
+                    Toast.fire({icon: 'success', title: 'Producto eliminado del sistema'});
+                    cargarInventario();
+                } catch(e) { MsgErr(e.message); }
+            }
         }
 
-        async function eliminar(sku) {
-            if (confirm(`¿Eliminar SKU ${sku}?`)) {
-                await fetch(`${API}/productos/${sku}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${TOKEN}` }
-                });
-                cargar();
-            }
+        // --- EDICIÓN PRODUCTOS Y CLIENTES ---
+        let mEditProd = null;
+        let mEditCli = null;
+
+        function abrirEditarProducto(sku) {
+            const p = productosBase.find(i => i.sku === sku);
+            if(!p) return;
+            document.getElementById('edit-sku').innerText = p.sku;
+            document.getElementById('edit-nombre').value = p.nombre;
+            document.getElementById('edit-costo').value = p.costo || 0;
+            document.getElementById('edit-precio').value = p.precio || 0;
+            if(!mEditProd) mEditProd = new bootstrap.Modal(document.getElementById('editarProductoModal'));
+            mEditProd.show();
+        }
+
+        async function guardarEdicionProducto() {
+            const sku = document.getElementById('edit-sku').innerText;
+            const data = {
+                nombre: document.getElementById('edit-nombre').value,
+                costo: parseFloat(document.getElementById('edit-costo').value),
+                precio: parseFloat(document.getElementById('edit-precio').value)
+            };
+            try {
+                await fetchAPI(`/productos/${sku}`, { method: 'PUT', body: data });
+                mEditProd.hide();
+                Toast.fire({ icon: 'success', title: 'Producto actualizado exitosamente' });
+                cargarInventario();
+            } catch(e) { MsgErr(e.message); }
+        }
+
+        async function abrirEditarCliente(id) {
+            try {
+                const data = await fetchAPI(`/clientes/${id}`);
+                document.getElementById('edit-cli-id').innerText = data.identificacion;
+                document.getElementById('edit-cli-nombre').value = data.nombre;
+                document.getElementById('edit-cli-apellido').value = data.apellido;
+                if(!mEditCli) mEditCli = new bootstrap.Modal(document.getElementById('editarClienteModal'));
+                mEditCli.show();
+            } catch(e) { MsgErr(e.message); }
+        }
+
+        async function guardarEdicionCliente() {
+            const id = document.getElementById('edit-cli-id').innerText;
+            const data = {
+                nombre: document.getElementById('edit-cli-nombre').value,
+                apellido: document.getElementById('edit-cli-apellido').value
+            };
+            try {
+                await fetchAPI(`/clientes/${id}`, { method: 'PUT', body: data });
+                mEditCli.hide();
+                Toast.fire({ icon: 'success', title: 'Cliente actualizado exitosamente' });
+                generarReporteCliente(); // Refresca la cabecera
+            } catch(e) { MsgErr(e.message); }
+        }
+
+        // --- IMPRESIÓN DINÁMICA ---
+        function imprimirTablaHTML(titulo, idTabla) {
+            const tbody = document.getElementById(idTabla);
+            if(tbody.innerText.includes("No hay movimientos") || tbody.innerText.includes("Este cliente no registra")) return MsgWarn("No hay datos que imprimir.");
+            
+            const tablaOriginal = document.getElementById(idTabla).parentElement.outerHTML;
+            const ventana = window.open('', '_blank');
+            const fecha = new Date().toLocaleString();
+            ventana.document.write(`
+                <html>
+                <head>
+                    <title>${titulo}</title>
+                    <style>
+                        body { font-family: sans-serif; padding: 40px; color: #000; }
+                        h2 { text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 10px; }
+                        p.meta { color: #555; margin-bottom: 30px; font-size: 0.9rem;}
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
+                        th, td { border: 1px solid #aaa; padding: 12px 8px; text-align: left; }
+                        th { background-color: #f1f5f9; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; }
+                        .text-danger { color: #e53e3e !important; }
+                        .text-success { color: #38a169 !important; }
+                        .bg-light { background-color: #f8fafc !important; }
+                        .text-center { text-align: center; }
+                        button { display: none !important; } /* Ocultar botones en la impresión */
+                    </style>
+                </head>
+                <body onload="setTimeout(()=>{ window.print(); window.close(); }, 500)">
+                    <h2>${titulo}</h2>
+                    <p class="meta">Generado el: ${fecha}<br>Módulo Mánager: habiCM. Gestión Corporativa</p>
+                    ${tablaOriginal}
+                </body>
+                </html>
+            `);
+            ventana.document.close();
         }
     </script>
 </body>
-
 </html>

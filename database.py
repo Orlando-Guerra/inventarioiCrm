@@ -5,7 +5,11 @@ from sqlalchemy.orm import sessionmaker
 # Reemplaza esto con la URL que te dé el servicio de base de datos (luego te digo dónde sacarla)
 SQLALCHEMY_DATABASE_URL = "postgresql://neondb_owner:npg_pAjYxV9PlS3C@ep-sparkling-resonance-anq027vt-pooler.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    pool_pre_ping=True,
+    pool_recycle=300
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 

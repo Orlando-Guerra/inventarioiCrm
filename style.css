@@ -1,108 +1,297 @@
-/* Variables de color estilo Moderno */
-:root {
-    --primary: #4361ee;
-    --secondary: #3f37c9;
-    --success: #4cc9f0;
-    --danger: #f72585;
-    --warning: #fee440;
-    --bg-body: #f8f9fc;
-    --glass: rgba(255, 255, 255, 0.9);
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root, [data-bs-theme="dark"] {
+    --bs-body-bg: #0F172A;
+    --bs-body-color: #F8FAFC;
+    --bs-primary: #6366F1;
+    --bs-primary-rgb: 99, 102, 241;
+    --bs-success: #10B981;
+    --bs-warning: #F59E0B;
+    --bs-danger: #EF4444;
+    
+    --primary: #6366F1; /* Indigo 500 */
+    --primary-hover: #4F46E5;
+    --secondary: #94A3B8; /* Slate 400 */
+    --background: #0F172A; /* Slate 900 Background */
+    --surface: #1E293B; /* Slate 800 Cards/Surfaces */
+    --text-main: #F8FAFC; /* Slate 50 */
+    --text-muted: #94A3B8; /* Slate 400 */
+    --border-color: #334155; /* Slate 700 */
 }
 
 body {
-    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
-    min-height: 100vh;
-    color: #2b2d42;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background) !important;
+    color: var(--text-main) !important;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Tarjetas con efecto cristal */
-.card {
-    background: var(--glass);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px !important;
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
-    margin-bottom: 2rem;
+/* Modificadores de utilidad para anular las de Bootstrap que causan choques */
+.bg-white, .bg-light {
+    background-color: var(--surface) !important;
+}
+.text-dark {
+    color: var(--text-main) !important;
+}
+.text-secondary {
+    color: var(--text-muted) !important;
 }
 
-/* Encabezados y Títulos */
-h2,
-h4,
-h5 {
-    font-weight: 700;
-    letter-spacing: -0.5px;
+/* Componentes Principales */
+.card, .glass-card {
+    background-color: var(--surface) !important;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 1.5rem;
+}
+
+.card:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
 }
 
 .stat-card {
-    background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+    border-left: 5px solid var(--primary);
+}
+
+.navbar {
+    background-color: var(--surface) !important;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* Pestañas (Tabs) */
+.nav-tabs .nav-link {
+    font-weight: 500;
+    color: var(--text-muted);
     border: none;
-    color: white !important;
+    border-bottom: 3px solid transparent;
 }
 
-/* Inputs y botones modernos */
-.form-control {
-    border-radius: 10px;
-    border: 1px solid #dee2e6;
-    padding: 0.75rem;
-    transition: all 0.3s ease;
+.nav-tabs .nav-link:hover {
+    color: var(--text-main);
 }
 
-.form-control:focus {
-    box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.15);
-    border-color: var(--primary);
+.nav-tabs .nav-link.active {
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+    background: transparent;
+}
+
+/* Botones */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+    transition: all 0.2s;
 }
 
 .btn-primary {
-    background: var(--primary);
-    border: none;
-    border-radius: 10px;
-    padding: 0.6rem 1.5rem;
-    font-weight: 600;
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
 }
 
-/* Estilo para la tabla de presupuesto (estilo factura) */
-.table {
-    border-radius: 15px;
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.btn-outline-primary {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+/* Modulos tipo Saint (Mosaicos) */
+.saint-tile {
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    position: relative;
     overflow: hidden;
 }
 
-.table thead {
-    background-color: #2b2d42;
-    color: white;
+.saint-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+    filter: brightness(1.1);
 }
 
-/* Badge de stock bajo animado */
-.badge-low {
-    background: var(--danger);
-    color: white;
-    box-shadow: 0 0 10px rgba(247, 37, 133, 0.4);
+.saint-tile::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
 }
 
-/* Animación de entrada */
-#main-section {
-    animation: fadeIn 0.8s ease-in-out;
+.logo-login {
+    position: absolute;
+    top: 30px;
+    left: 45px;
+    font-size: 2.8rem;
+    font-family: 'Montserrat', 'Inter', sans-serif;
+    font-weight: 900;
+    color: #FFFFFF;
+    letter-spacing: -2px;
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+.logo-login span { 
+    background: linear-gradient(135deg, var(--primary) 0%, #A855F7 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.logo-login-icon {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, var(--primary) 0%, #A855F7 100%);
+    border-radius: 12px;
+    margin-right: 18px;
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.logo-login-icon::after {
+    content: '';
+    width: 20px; 
+    height: 20px;
+    background: #FFFFFF;
+    border-radius: 5px;
+    transform: rotate(45deg);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
 }
 
-/* Ajustes de impresión */
+/* Tablas Modernas Premium */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-main);
+    vertical-align: middle;
+}
+
+.table th {
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--border-color) !important;
+}
+
+.table td {
+    border-bottom: 1px solid var(--border-color) !important;
+    color: var(--text-main);
+    padding: 1rem 0.5rem;
+}
+
+.table-light, .table-light th, .table-light td {
+    background-color: #162032 !important; 
+    color: var(--text-main) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Formularios inputs premium oscuros */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    padding: 0.6rem 1rem;
+    background-color: #0B1120 !important; /* Fondo de inputs más oscuro */
+    color: var(--text-main) !important;
+    transition: all 0.2s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+    background-color: var(--surface) !important;
+    color: var(--text-main) !important;
+}
+
+.form-control::placeholder {
+    color: #64748B !important;
+}
+
+/* Badges / Etiquetas */
+.badge {
+    padding: 0.4em 0.8em;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.badge-low { background-color: rgba(239, 68, 68, 0.2); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3);}
+.badge-ok { background-color: rgba(16, 185, 129, 0.2); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.3);}
+
+/* Módulo Factura: Este SÍ debe ser blanco obligatoriamente para impresión */
+#factura-contenedor {
+    display: none;
+    background: #FFFFFF !important;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    max-width: 800px;
+    margin: 40px auto;
+}
+
+#factura-contenedor *, 
+#factura-contenedor .text-dark, 
+#factura-contenedor .text-secondary {
+    color: #0F172A !important;
+}
+
+#factura-contenedor .factura-header {
+    border-bottom: 2px solid #E2E8F0;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+#factura-contenedor table.table,
+#factura-contenedor table.table th,
+#factura-contenedor table.table td {
+    border-color: #CBD5E1 !important;
+}
+#factura-contenedor .bg-light {
+    background-color: #F8FAFC !important;
+}
+
+/* Utilidades de Impresión PDF */
 @media print {
-    body {
-        background: white !important;
+    body { 
+        background-color: #FFFFFF !important; 
+        color: #000000 !important;
+        margin: 0;
+        padding: 0;
     }
-
-    .card {
-        border: 1px solid #eee !important;
+    .no-print { display: none !important; }
+    
+    #factura-contenedor {
+        display: block !important;
         box-shadow: none !important;
+        margin: 0;
+        padding: 0;
+        max-width: 100%;
+        border: none !important;
+    }
+    
+    #factura-contenedor * {
+        color: #000000 !important;
+    }
+    
+    #factura-contenedor .bg-light {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background-color: #F8FAFC !important;
     }
 }
