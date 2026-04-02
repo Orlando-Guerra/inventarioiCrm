@@ -1,297 +1,260 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 :root, [data-bs-theme="dark"] {
-    --bs-body-bg: #0F172A;
-    --bs-body-color: #F8FAFC;
-    --bs-primary: #6366F1;
-    --bs-primary-rgb: 99, 102, 241;
-    --bs-success: #10B981;
-    --bs-warning: #F59E0B;
-    --bs-danger: #EF4444;
-    
-    --primary: #6366F1; /* Indigo 500 */
-    --primary-hover: #4F46E5;
-    --secondary: #94A3B8; /* Slate 400 */
-    --background: #0F172A; /* Slate 900 Background */
-    --surface: #1E293B; /* Slate 800 Cards/Surfaces */
-    --text-main: #F8FAFC; /* Slate 50 */
-    --text-muted: #94A3B8; /* Slate 400 */
-    --border-color: #334155; /* Slate 700 */
+    /* Paleta Enterprise / ERP Clásico: Azul oscuro corporativo y grises densos */
+    --bs-body-bg: #1B2024;
+    --bs-body-color: #E2E8F0;
+    --bs-primary: #1D4ED8; 
+    --bs-primary-rgb: 29, 78, 216;
+    --bs-success: #15803D; 
+    --bs-warning: #B45309; 
+    --bs-danger: #B91C1C; 
+    --bs-info: #0369A1;
+
+    --primary: #1D4ED8; /* Azul Fuerte Clásico */
+    --primary-hover: #1E3A8A;
+    --secondary: #64748B;
+    --background: #1B2024; /* Fondo Oscuro Base */
+    --surface: #242A31;    /* Paneles grises densos */
+    --text-main: #E2E8F0;
+    --text-muted: #94A3B8;
+    --border-color: #3B4B5C; /* Borde contrastante */
+}
+
+/* 1. Zoom Out Global: Reducir escala 'rem' base y fuente principal */
+html {
+    font-size: 13px !important;
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    /* 2. Tipografía Institucional dándole aspecto pesado de software de escritorio */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--background) !important;
     color: var(--text-main) !important;
     -webkit-font-smoothing: antialiased;
 }
 
-/* Modificadores de utilidad para anular las de Bootstrap que causan choques */
-.bg-white, .bg-light {
-    background-color: var(--surface) !important;
-}
-.text-dark {
-    color: var(--text-main) !important;
-}
-.text-secondary {
-    color: var(--text-muted) !important;
+/* Modificadores de utilidad para anular Bootstrap */
+.bg-white, .bg-light { background-color: var(--surface) !important; border: 1px solid var(--border-color); }
+.text-dark { color: var(--text-main) !important; }
+.text-secondary { color: var(--text-muted) !important; }
+
+/* 3. Forzar Bordes Cuadrados globalmente en todos los componentes y eliminar sombras soft */
+* {
+    border-radius: 0px !important;
 }
 
-/* Componentes Principales */
 .card, .glass-card {
     background-color: var(--surface) !important;
     border: 1px solid var(--border-color);
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    margin-bottom: 1.5rem;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4); /* Sombra rígida tipo ventana SO antiguo */
+    margin-bottom: 2rem;
 }
 
-.card:hover {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-}
+/* Efecto hover minimalista, sin crecimiento z-index extremo */
+.card:hover { box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6); }
 
-.stat-card {
-    border-left: 5px solid var(--primary);
-}
+.stat-card { border-left: 4px solid var(--primary); }
 
 .navbar {
-    background-color: var(--surface) !important;
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    background-color: var(--primary) !important; /* Navbar corporativa en azul intenso */
+    border-bottom: 2px solid #000;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
+.navbar .navbar-brand { font-family: 'Arial', sans-serif; letter-spacing: 0.5px; }
 
-/* Pestañas (Tabs) */
+/* Pestañas (Tabs) más agresivas */
 .nav-tabs .nav-link {
-    font-weight: 500;
+    font-weight: 600;
     color: var(--text-muted);
-    border: none;
+    border: 1px solid transparent;
     border-bottom: 3px solid transparent;
+    padding: 0.5rem 1rem;
 }
 
-.nav-tabs .nav-link:hover {
-    color: var(--text-main);
-}
-
+.nav-tabs .nav-link:hover { color: var(--text-main); background: #2A323A; }
 .nav-tabs .nav-link.active {
-    color: var(--primary);
-    border-bottom: 3px solid var(--primary);
-    background: transparent;
+    color: #FFF;
+    background-color: var(--primary);
+    border-color: var(--border-color) var(--border-color) transparent;
 }
 
-/* Botones */
+/* Botones con aspecto plano bloque */
 .btn {
-    border-radius: 8px;
-    font-weight: 500;
-    padding: 0.5rem 1.25rem;
-    transition: all 0.2s;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: 1px solid transparent;
+    transition: none; /* Eliminar animaciones suaves de hover ERP */
 }
 
-.btn-primary {
-    background-color: var(--primary);
-    border-color: var(--primary);
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-hover);
-    border-color: var(--primary-hover);
-    transform: translateY(-1px);
-}
-
-.btn-outline-primary {
-    color: var(--primary);
-    border-color: var(--primary);
-}
-
-.btn-outline-primary:hover {
-    background-color: var(--primary);
-    color: white;
-}
+.btn-primary { background-color: var(--primary); border-color: #111; color: white; }
+.btn-primary:hover { background-color: var(--primary-hover); }
+.btn-outline-primary { color: #60A5FA; border-color: #60A5FA; }
+.btn-outline-primary:hover { background-color: #60A5FA; color: #111; }
+.btn-outline-secondary { border-color: var(--border-color); color: var(--text-main); }
+.btn-outline-secondary:hover { background-color: var(--border-color); }
 
 /* Modulos tipo Saint (Mosaicos) */
 .saint-tile {
-    transition: all 0.2s ease;
     cursor: pointer;
-    border: none;
+    border: 1px solid #111;
     position: relative;
     overflow: hidden;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .saint-tile:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.3);
-    filter: brightness(1.1);
+    filter: brightness(1.20);
 }
 
-.saint-tile::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
-    pointer-events: none;
-}
+/* Colores Profesionales Enterprise (Fondos muy oscuros c/ borde superior luminoso) */
+.tile-amber { background-color: #3B1B06; border-top: 3px solid #D97706; }
+.tile-blue { background-color: #0A1938; border-top: 3px solid #3B82F6; }
+.tile-emerald { background-color: #032A21; border-top: 3px solid #10B981; }
+.tile-teal { background-color: #0C3330; border-top: 3px solid #14B8A6; }
+.tile-crimson { background-color: #4A0C0C; border-top: 3px solid #EF4444; }
 
 .logo-login {
     position: absolute;
-    top: 30px;
-    left: 45px;
-    font-size: 2.8rem;
-    font-family: 'Montserrat', 'Inter', sans-serif;
-    font-weight: 900;
+    top: 20px;
+    left: 30px;
+    font-size: 2rem;
+    font-family: 'Arial Black', Impact, sans-serif;
     color: #FFFFFF;
-    letter-spacing: -2px;
+    letter-spacing: -1px;
     display: flex;
     align-items: center;
     z-index: 1000;
-    text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    text-shadow: 2px 2px 4px #000;
 }
-.logo-login span { 
-    background: linear-gradient(135deg, var(--primary) 0%, #A855F7 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+.logo-login span { color: #60A5FA; }
 
 .logo-login-icon {
-    width: 45px;
-    height: 45px;
-    background: linear-gradient(135deg, var(--primary) 0%, #A855F7 100%);
-    border-radius: 12px;
-    margin-right: 18px;
-    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.logo-login-icon::after {
-    content: '';
-    width: 20px; 
-    height: 20px;
-    background: #FFFFFF;
-    border-radius: 5px;
-    transform: rotate(45deg);
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+    width: 30px;
+    height: 30px;
+    background-color: var(--primary);
+    border: 1px solid #fff;
+    margin-right: 12px;
+    box-shadow: 1px 1px 3px #000;
+    display: inline-block;
 }
 
-/* Tablas Modernas Premium */
+/* Tablas Modernas Premium convertidas a Densas Enterprise Grid */
 .table {
     --bs-table-bg: transparent;
     --bs-table-color: var(--text-main);
     vertical-align: middle;
+    margin-bottom: 0;
+    border: 1px solid var(--border-color);
 }
 
 .table th {
-    font-weight: 600;
-    color: var(--text-muted);
+    font-weight: 700;
+    color: #FFF;
+    background-color: #17202A !important;
     text-transform: uppercase;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     letter-spacing: 0.05em;
-    border-bottom: 2px solid var(--border-color) !important;
+    border: 1px solid var(--border-color) !important;
+    padding: 0.4rem 0.6rem; /* Extrema densidad */
 }
 
 .table td {
-    border-bottom: 1px solid var(--border-color) !important;
+    border: 1px solid var(--border-color) !important;
     color: var(--text-main);
-    padding: 1rem 0.5rem;
+    padding: 0.35rem 0.6rem; /* Extrema densidad */
+    font-family: Consolas, 'Courier New', monospace; /* Para números ordenados */
+    font-size: 0.95rem; /* Ajuste por el html 13px */
+}
+
+/* Para nombres de descripciones, mantener fuente sans */
+.table td strong, .table td .fst-normal {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
 }
 
 .table-light, .table-light th, .table-light td {
-    background-color: #162032 !important; 
+    background-color: #1C242D !important; 
     color: var(--text-main) !important;
     border-color: var(--border-color) !important;
 }
 
-/* Formularios inputs premium oscuros */
+.table-hover tbody tr:hover td {
+    background-color: #10151A !important;
+}
+
+/* Formularios inputs premium oscuros (ahora cuadrados) */
 .form-control, .form-select {
-    border-radius: 8px;
     border: 1px solid var(--border-color);
-    padding: 0.6rem 1rem;
-    background-color: #0B1120 !important; /* Fondo de inputs más oscuro */
+    padding: 0.4rem 0.6rem;
+    background-color: #12181E !important; 
     color: var(--text-main) !important;
-    transition: all 0.2s;
+    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.5); /* Sombra interna clásica */
 }
 
 .form-control:focus, .form-select:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
-    background-color: var(--surface) !important;
-    color: var(--text-main) !important;
+    border-color: #60A5FA;
+    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.5) !important;
 }
 
-.form-control::placeholder {
-    color: #64748B !important;
-}
+.form-control::placeholder { color: #64748B !important; }
 
 /* Badges / Etiquetas */
 .badge {
-    padding: 0.4em 0.8em;
-    border-radius: 6px;
-    font-weight: 500;
+    padding: 0.3em 0.5em;
+    font-weight: 700;
+    font-family: Tahoma, sans-serif;
+    border: 1px solid rgba(255,255,255,0.2) !important;
 }
 
-.badge-low { background-color: rgba(239, 68, 68, 0.2); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3);}
-.badge-ok { background-color: rgba(16, 185, 129, 0.2); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.3);}
+/* Alineaciones de modales cuadrados */
+.modal-content {
+    border: 2px solid #555;
+    box-shadow: 4px 4px 15px rgba(0,0,0,0.8);
+}
+.modal-header { background-color: #17202A; padding: 0.8rem 1rem; }
+.modal-footer { padding: 0.8rem 1rem; background-color: #1C242D; }
 
 /* Módulo Factura: Este SÍ debe ser blanco obligatoriamente para impresión */
 #factura-contenedor {
     display: none;
     background: #FFFFFF !important;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    padding: 30px;
+    border: 1px solid #000;
+    box-shadow: none;
     max-width: 800px;
-    margin: 40px auto;
+    margin: 20px auto;
 }
 
 #factura-contenedor *, 
 #factura-contenedor .text-dark, 
 #factura-contenedor .text-secondary {
-    color: #0F172A !important;
+    color: #000 !important;
+    border-radius: 0 !important;
+    font-family: Arial, Helvetica, sans-serif !important;
 }
 
 #factura-contenedor .factura-header {
-    border-bottom: 2px solid #E2E8F0;
-    padding-bottom: 20px;
-    margin-bottom: 30px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
 }
 
-#factura-contenedor table.table,
 #factura-contenedor table.table th,
 #factura-contenedor table.table td {
-    border-color: #CBD5E1 !important;
+    border: 1px solid #000 !important;
+    padding: 0.2rem 0.4rem;
 }
-#factura-contenedor .bg-light {
-    background-color: #F8FAFC !important;
-}
+#factura-contenedor .bg-light { background-color: #F8FAFC !important; }
 
 /* Utilidades de Impresión PDF */
 @media print {
-    body { 
-        background-color: #FFFFFF !important; 
-        color: #000000 !important;
-        margin: 0;
-        padding: 0;
-    }
+    body { background-color: #FFFFFF !important; color: #000000 !important; margin: 0; padding: 0; }
     .no-print { display: none !important; }
     
     #factura-contenedor {
-        display: block !important;
-        box-shadow: none !important;
-        margin: 0;
-        padding: 0;
-        max-width: 100%;
-        border: none !important;
+        display: block !important; box-shadow: none !important; margin: 0; padding: 0;
+        max-width: 100%; border: none !important;
     }
-    
-    #factura-contenedor * {
-        color: #000000 !important;
-    }
-    
-    #factura-contenedor .bg-light {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        background-color: #F8FAFC !important;
-    }
+    #factura-contenedor * { color: #000000 !important; }
 }

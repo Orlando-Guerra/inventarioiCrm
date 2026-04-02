@@ -85,46 +85,46 @@
 
                 <div class="row g-3">
                     <div class="col-md-3 col-6">
-                        <div class="saint-tile bg-warning text-dark p-4 rounded shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-inventario')">
+                        <div class="saint-tile tile-amber p-4 shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-inventario')">
                             <div>
-                                <h4 class="fw-bold mb-1">Inventario</h4>
-                                <p class="small mb-0 opacity-75 fw-semibold">Control, Carga y Ajuste.</p>
+                                <h4 class="fw-bold mb-1 text-white">Inventario</h4>
+                                <p class="small mb-0 opacity-75 fw-semibold text-white">Control, Carga y Ajuste.</p>
                             </div>
                             <div class="mt-4 text-end fs-2 opacity-50">📦</div>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
-                        <div class="saint-tile bg-primary text-white p-4 rounded shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-productos')">
+                        <div class="saint-tile tile-blue p-4 shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-productos')">
                             <div>
-                                <h4 class="fw-bold mb-1">Productos</h4>
-                                <p class="small mb-0 opacity-75 fw-semibold">Creación de Catálogo.</p>
+                                <h4 class="fw-bold mb-1 text-white">Productos</h4>
+                                <p class="small mb-0 opacity-75 fw-semibold text-white">Creación de Catálogo.</p>
                             </div>
                             <div class="mt-4 text-end fs-2 opacity-50">🏷️</div>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
-                        <div class="saint-tile bg-success text-white p-4 rounded shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-usuarios')">
+                        <div class="saint-tile tile-emerald p-4 shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-usuarios')">
                             <div>
-                                <h4 class="fw-bold mb-1">Personal</h4>
-                                <p class="small mb-0 opacity-75 fw-semibold">Vendedores y Cajeros.</p>
+                                <h4 class="fw-bold mb-1 text-white">Personal</h4>
+                                <p class="small mb-0 opacity-75 fw-semibold text-white">Vendedores y Cajeros.</p>
                             </div>
                             <div class="mt-4 text-end fs-2 opacity-50">👥</div>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
-                        <div class="saint-tile bg-info text-dark p-4 rounded shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-reportes')">
+                        <div class="saint-tile tile-teal p-4 shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-reportes')">
                             <div>
-                                <h4 class="fw-bold mb-1">Reportes</h4>
-                                <p class="small mb-0 opacity-75 fw-semibold">Consultas y Kárdex.</p>
+                                <h4 class="fw-bold mb-1 text-white">Reportes</h4>
+                                <p class="small mb-0 opacity-75 fw-semibold text-white">Consultas y Kárdex.</p>
                             </div>
                             <div class="mt-4 text-end fs-2 opacity-50">📊</div>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
-                        <div class="saint-tile bg-danger text-white p-4 rounded shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-historial')">
+                        <div class="saint-tile tile-crimson p-4 shadow h-100 d-flex flex-column justify-content-between" onclick="mostrarTabAdmin('tab-historial')">
                             <div>
-                                <h4 class="fw-bold mb-1">Servicios / Facturas</h4>
-                                <p class="small mb-0 opacity-75 fw-semibold">Historial de Ventas.</p>
+                                <h4 class="fw-bold mb-1 text-white">Servicios / Facturas</h4>
+                                <p class="small mb-0 opacity-75 fw-semibold text-white">Historial de Ventas.</p>
                             </div>
                             <div class="mt-4 text-end fs-2 opacity-50">📄</div>
                         </div>
@@ -573,7 +573,7 @@
             document.getElementById('cajero-section').classList.add('d-none');
             document.getElementById('vendedor-section').classList.add('d-none');
 
-            document.querySelector('.logo-login').classList.remove('no-print');
+            document.querySelector('.logo-login').classList.add('d-none');
 
             if (USER_ROLE === "admin") {
                 document.getElementById('admin-section').classList.remove('d-none');
